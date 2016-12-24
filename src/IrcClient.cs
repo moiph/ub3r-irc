@@ -6,7 +6,7 @@ namespace UB3RIRC
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
 
-    public class Client
+    public class IrcClient
     {
         private Protocol protocol;
         private Logger logger;
@@ -42,7 +42,7 @@ namespace UB3RIRC
         /// Incoming messege event handler.
         /// </summary>
         /// <param name="message">The message received from the server.</param>
-        public delegate void IrcEventHandler(MessageData data, Client client);
+        public delegate void IrcEventHandler(MessageData data, IrcClient client);
 
         /// <summary>
         /// Whether or not this client is connected.
@@ -76,7 +76,7 @@ namespace UB3RIRC
         /// <param name="useSsl">Whether or not to use SSL.</param>
         /// <param name="password">The optional password to use when connecting.</param>
         /// <param name="logVerbosity">The log verbosity.</param>
-        public Client(string id, string nick, string host, int port, bool useSsl, string password = null, LogType logVerbosity = LogType.Debug)
+        public IrcClient(string id, string nick, string host, int port, bool useSsl, string password = null, LogType logVerbosity = LogType.Debug)
         {
             this.Id = id;
             this.Nick = nick;
