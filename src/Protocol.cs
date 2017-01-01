@@ -147,6 +147,7 @@ namespace UB3RIRC
 
                 case ReplyCode.RPL_ENDOFMOTD:
                 case ReplyCode.RPL_NOMOTD:
+                case ReplyCode.RPL_NAMREPLY:
                 case "PRIVMSG":
                     this.OnIrcEvent?.Invoke(data);
                     break;
