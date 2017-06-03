@@ -23,6 +23,8 @@ namespace UB3RIRC
 
         private StreamWriter streamWriter;
 
+        private Timer pingTimer;
+
         /// <summary>
         /// The server to connect to.
         /// </summary>
@@ -210,19 +212,28 @@ namespace UB3RIRC
                 this.Logger.Log(LogType.Debug, "Listening for messages.");
 
                 this.IsConnected = true;
+
+                this.pingTimer?.Dispose();
+                this.pingTimer = new Timer(this.Ping, null, 120000, 120000);
             }
-            catch (SocketException)
+            catch (SocketException e)
             {
                 // Failed to connect.
 
                 // TODO:
                 // Add client configuration to attempt retries
+                this.Logger.Log(LogType.Error, $"Caught IOexception when reading from stream: {e}");
             }
             catch (NotConnectedException)
             {
                 // TODO:
                 // Improve this error handling
             }
+        }
+
+        public void Ping(object state)
+        {
+            this.Write($"PING {Utime}");
         }
 
         /// <summary>
@@ -284,10 +295,7 @@ namespace UB3RIRC
         /// <param name="line">The current line read from the stream.</param>
         public void IncomingMessage(string line)
         {
-            if (this.OnIncomingMessage != null)
-            {
-                this.OnIncomingMessage(line);
-            }
+            this.OnIncomingMessage?.Invoke(line);
         }
 
         /// <summary>
@@ -297,6 +305,18 @@ namespace UB3RIRC
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Helper to get a unix timestamp.
+        /// </summary>
+        public static long Utime
+        {
+            get
+            {
+                TimeSpan span = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0);
+                return (int)span.TotalSeconds;
+            }
         }
 
         /// <summary>

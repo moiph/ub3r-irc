@@ -45,7 +45,7 @@
             lock (consoleLock)
             {
                 var currentColor = Console.ForegroundColor;
-                color = color.HasValue ? color.Value : currentColor;
+                color = color ?? currentColor;
 
                 Console.Write(new DateTime(ticks).ToString("HH:mm:ss"));
                 Console.ForegroundColor = color.Value;

@@ -165,8 +165,7 @@ namespace UB3RIRC
         /// <param name="args">Arguments for the command.</param>
         public void Command(string commandName, params string[] args)
         {
-            string commandSyntax;
-            if (!Protocol.Commands.TryGetValue(commandName.ToString(), out commandSyntax))
+            if (!Protocol.Commands.TryGetValue(commandName.ToString(), out string commandSyntax))
             {
                 throw new ArgumentException(string.Format("Unrecognized command: {0}", commandName));
             }
