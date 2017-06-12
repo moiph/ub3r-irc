@@ -2,7 +2,7 @@
 {
     using System;
 
-    class ConsoleLog : ILog
+    public class ConsoleLog : ILog
     {
         public void Debug(string text, long ticks)
         {
@@ -39,7 +39,7 @@
             this.WriteToConsole(">>>", text, ticks, ConsoleColor.Blue);
         }
 
-        private object consoleLock = new object();
+        private static object consoleLock = new object();
         private void WriteToConsole(string prefix, string text, long ticks, ConsoleColor? color = null)
         {
             lock (consoleLock)
