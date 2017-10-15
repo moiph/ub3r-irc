@@ -233,7 +233,10 @@ namespace UB3RIRC
 
         public void Ping(object state)
         {
-            this.Write($"PING {Utime}");
+            if (this.IsConnected)
+            {
+                this.Write($"PING {Utime}");
+            }
         }
 
         /// <summary>
