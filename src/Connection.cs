@@ -346,12 +346,14 @@ namespace UB3RIRC
         /// </summary>
         private void CloseConnections()
         {
+            this.IsConnected = false;
+
             this.streamWriter.Dispose();
 
             this.tcpClient.Dispose();
             this.listener.Dispose();
 
-            this.IsConnected = false;
+            this.pingTimer.Dispose();
         }
     }
 
