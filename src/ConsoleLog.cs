@@ -1,9 +1,40 @@
 ﻿namespace UB3RIRC
 {
     using System;
+    using System.Collections.Concurrent;
+    using System.Threading.Tasks;
 
     public class ConsoleLog : ILog
     {
+        BlockingCollection<LogMessage> logMessageCollection = new BlockingCollection<LogMessage>();
+        private static object consoleLock = new object();
+
+        public ConsoleLog()
+        {
+            Task.Run(() =>
+            {
+                foreach (var message in logMessageCollection.GetConsumingEnumerable())
+                {
+                    lock (consoleLock)
+                    {
+                        var currentColor = Console.ForegroundColor;
+                        ConsoleColor? color = message.Color ?? currentColor;
+
+                        Console.Write(new DateTime(message.Ticks).ToString("HH:mm:ss"));
+                        Console.ForegroundColor = color.Value;
+                        Console.Write(" " + message.Prefix + " ");
+                        Console.ForegroundColor = currentColor;
+                        Console.WriteLine(message.Text);
+                    }
+                }
+            });
+        }
+
+        ~ConsoleLog()
+        {
+            logMessageCollection.CompleteAdding();
+        }
+
         public void Debug(string text, long ticks)
         {
             this.WriteToConsole("+++", text, ticks);
@@ -39,20 +70,24 @@
             this.WriteToConsole(">>>", text, ticks, ConsoleColor.Blue);
         }
 
-        private static object consoleLock = new object();
+        
         private void WriteToConsole(string prefix, string text, long ticks, ConsoleColor? color = null)
         {
-            lock (consoleLock)
+            logMessageCollection.Add(new LogMessage
             {
-                var currentColor = Console.ForegroundColor;
-                color = color ?? currentColor;
-
-                Console.Write(new DateTime(ticks).ToString("HH:mm:ss"));
-                Console.ForegroundColor = color.Value;
-                Console.Write(" " + prefix + " ");
-                Console.ForegroundColor = currentColor;
-                Console.WriteLine(text);
-            }
+                Prefix = prefix,
+                Text = text,
+                Ticks = ticks,
+                Color = color,
+            });
         }
+    }
+
+    internal class LogMessage
+    {
+        public string Prefix { get; set; }
+        public string Text { get; set; }
+        public long Ticks { get; set; }
+        public ConsoleColor? Color { get; set; }
     }
 }

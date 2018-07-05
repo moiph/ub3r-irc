@@ -112,10 +112,7 @@ namespace UB3RIRC
                 // Reader and writer
                 Stream stream = this.tcpClient.GetStream();
 
-                //
-                // TODO: Enable this once we can move to net stanard 2.0 (which should bring SslStream support)
-                //
-                /*if (this.UseSsl)
+                if (this.UseSsl)
                 {
                     var remoteCertificateValidationCallback = new RemoteCertificateValidationCallback(
                         (object sender,
@@ -189,7 +186,7 @@ namespace UB3RIRC
                     }
                     catch (AuthenticationException e)
                     {
-                        this.Logger.Log(LogType.Warn, "Failed to authenticate SslStream: {0}", e.Message);
+                        this.Logger.Log(LogType.Error, "Failed to authenticate SslStream: {0}", e.Message);
 
                         if (e.InnerException != null)
                         {
@@ -202,7 +199,15 @@ namespace UB3RIRC
                         // New exception type
                         throw new NotConnectedException("Failed to Connect");
                     }
-                } */
+                    catch (IOException e)
+                    {
+                        this.Logger.Log(LogType.Error, "Failed to connect SslStream: {0}", e.Message);
+
+                        this.tcpClient.Close();
+
+                        throw new NotConnectedException("Failed to connect -- double check the port being used for SSL connections");
+                    }
+                }
 
                 this.streamWriter = new StreamWriter(stream);
 
@@ -235,7 +240,14 @@ namespace UB3RIRC
         {
             if (this.IsConnected)
             {
-                this.Write($"PING {Utime}");
+                try
+                {
+                    this.Write($"PING {Utime}");
+                }
+                catch (Exception e)
+                {
+                    this.Logger.Log(LogType.Error, $"Caught exception when sending ping: {e}");
+                }
             }
         }
 
