@@ -95,7 +95,7 @@ namespace UB3RIRC
             }
             catch (IOException e)
             {
-                this.Logger.Log(LogType.Error, "Caught IOexception when reading from stream: {0}", e);
+                this.Logger.Log(LogType.Error, "Caught IOexception when reading from stream", e);
             }
             finally
             {

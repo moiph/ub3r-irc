@@ -167,7 +167,7 @@ namespace UB3RIRC
         {
             if (!Protocol.Commands.TryGetValue(commandName.ToString(), out string commandSyntax))
             {
-                throw new ArgumentException(string.Format("Unrecognized command: {0}", commandName));
+                throw new ArgumentException($"Unrecognized command: {commandName}");
             }
 
             this.connection.Write(commandSyntax, args);
@@ -182,7 +182,7 @@ namespace UB3RIRC
         {
             if (!target.StartsWith("#"))
             {
-                throw new ArgumentException(string.Format("Target must be a channel; {0} does not start with #.", target));
+                throw new ArgumentException($"Target must be a channel; {target} does not start with #.");
             }
 
             this.connection.Write("TOPIC {0} {1}", target, topic);

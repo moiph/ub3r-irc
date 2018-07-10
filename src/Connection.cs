@@ -102,7 +102,7 @@ namespace UB3RIRC
         public async Task ConnectAsync()
         {
             // Setup the connection
-            this.Logger.Log(LogType.Info, "Connecting to {0}", this.Server);
+            this.Logger.Log(LogType.Info, $"Connecting to {this.Server}");
 
             try
             {
@@ -125,7 +125,7 @@ namespace UB3RIRC
                                 return true;
                             }
 
-                            this.Logger.Log(LogType.Warn, "Certificate error: {0}", sslPolicyErrors);
+                            this.Logger.Log(LogType.Warn, $"Certificate error: {sslPolicyErrors}");
 
                             // Do not allow this client to communicate with unauthenticated servers. 
                             return false;
@@ -186,12 +186,7 @@ namespace UB3RIRC
                     }
                     catch (AuthenticationException e)
                     {
-                        this.Logger.Log(LogType.Error, "Failed to authenticate SslStream: {0}", e.Message);
-
-                        if (e.InnerException != null)
-                        {
-                            this.Logger.Log(LogType.Error, "Inner exception: {0}", e.InnerException.Message);
-                        }
+                        this.Logger.Log(LogType.Error, "Failed to authenticate SslStream", e);
 
                         this.tcpClient.Close();
 
@@ -201,7 +196,7 @@ namespace UB3RIRC
                     }
                     catch (IOException e)
                     {
-                        this.Logger.Log(LogType.Error, "Failed to connect SslStream: {0}", e.Message);
+                        this.Logger.Log(LogType.Error, "Failed to connect SslStream", e);
 
                         this.tcpClient.Close();
 
@@ -227,7 +222,7 @@ namespace UB3RIRC
 
                 // TODO:
                 // Add client configuration to attempt retries
-                this.Logger.Log(LogType.Error, $"Caught IOexception when reading from stream: {e}");
+                this.Logger.Log(LogType.Error, "Caught IOexception when reading from stream", e);
             }
             catch (NotConnectedException)
             {
@@ -246,7 +241,7 @@ namespace UB3RIRC
                 }
                 catch (Exception e)
                 {
-                    this.Logger.Log(LogType.Error, $"Caught exception when sending ping: {e}");
+                    this.Logger.Log(LogType.Error, "Caught exception when sending ping", e);
                 }
             }
         }
@@ -256,7 +251,7 @@ namespace UB3RIRC
         /// </summary>
         public void Disconnect(bool shouldFireEvent = false)
         {
-            this.Logger.Log(LogType.Info, "Disconnecting from {0}", this.Server);
+            this.Logger.Log(LogType.Info, $"Disconnecting from {this.Server}");
             this.CloseConnections();
 
             if (shouldFireEvent && this.OnDisconnect != null)
@@ -283,7 +278,7 @@ namespace UB3RIRC
         {
             if (!this.IsConnected)
             {
-                throw new NotConnectedException(string.Format("Server {0} is not connected.", this.Server));
+                throw new NotConnectedException($"Server {this.Server} is not connected.");
             }
 
             if (args != null)
@@ -294,7 +289,7 @@ namespace UB3RIRC
                 }
                 catch (FormatException)
                 {
-                    throw new ArgumentException(string.Format("Invalid arguments list, expected pattern: {0}", text));
+                    throw new ArgumentException($"Invalid arguments list, expected pattern: {text}");
                 }
             }
 

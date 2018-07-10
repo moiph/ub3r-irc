@@ -3,6 +3,20 @@
     using System;
     using System.Collections.Generic;
 
+    public class LogData
+    {
+        public LogType LogType { get; }
+        public string Message { get; }
+        public Exception Exception { get; }
+
+        public LogData(LogType logType, string message, Exception exception = null)
+        {
+            this.LogType = logType;
+            this.Message = message;
+            this.Exception = exception;
+        }
+    }
+
     /// <summary>
     /// A logger
     /// </summary>
@@ -19,6 +33,17 @@
         {
             return new Logger(LogType.Debug, new List<ILog> { new ConsoleLog() });
         }
+
+        /// <summary>
+        /// Log events
+        /// </summary>
+        public event LogEventHandler OnLogEvent;
+
+        /// <summary>
+        /// Log event handler.
+        /// </summary>
+        /// <param name="message">The message received from the server.</param>
+        public delegate void LogEventHandler(LogData data);
 
         /// <summary>
         /// Initializes a new instance of Logger 
@@ -56,12 +81,9 @@
         /// <param name="logType">The type of log (debug, error, etc)</param>
         /// <param name="text">The text to log.</param>
         /// <param name="args">The string format arguments.</param>
-        public void Log(LogType logType, string text, params object[] args)
+        public void Log(LogType logType, string text, Exception exception = null)
         {
-            if (args != null)
-            {
-                text = string.Format(text, args);
-            }
+            this.OnLogEvent?.Invoke(new LogData(logType, text, exception));
 
             switch (logType)
             {
@@ -115,7 +137,7 @@
                     break;
 
                 default:
-                    throw new ArgumentException(string.Format("Unrecognized LogType specified: {0}", logType));
+                    throw new ArgumentException($"Unrecognized LogType specified: {logType}");
             }
         }
     }

@@ -39,10 +39,21 @@ namespace UB3RIRC
         public event IrcEventHandler OnIrcEvent;
 
         /// <summary>
-        /// Incoming messege event handler.
+        /// Log events
+        /// </summary>
+        public event LogEventHandler OnLogEvent;
+
+        /// <summary>
+        /// Incoming message event handler.
         /// </summary>
         /// <param name="message">The message received from the server.</param>
         public delegate void IrcEventHandler(MessageData data, IrcClient client);
+
+        /// <summary>
+        /// Log event handler.
+        /// </summary>
+        /// <param name="logData"></param>
+        public delegate void LogEventHandler(LogData logData);
 
         /// <summary>
         /// Whether or not this client is connected.
@@ -53,13 +64,27 @@ namespace UB3RIRC
         }
 
         /// <summary>
-        /// Event handle for a protocol event.
+        /// Event handler for a protocol event.
         /// </summary>
         /// <param name="data">The message data.</param>
         public void OnProtocolIrcEvent(MessageData data)
         {
             this.OnIrcEvent?.Invoke(data, this);
         }
+
+        /// <summary>
+        /// Event handler for a log event.
+        /// </summary>
+        /// <param name="logData">The log data.</param>
+        public void OnLoggerEvent(LogData logData)
+        {
+            this.OnLogEvent?.Invoke(logData);
+        }
+
+        /// <summary>
+        /// The client's logger. Use if you want to add a log medium (e.g. a console log)
+        /// </summary>
+        public Logger Logger => this.logger;
 
         /// <summary>
         /// Whether or not we're hooked up and listening to events.
@@ -84,7 +109,8 @@ namespace UB3RIRC
             this.Password = password;
 
             // setup loggers
-            this.logger = new Logger(logVerbosity, new List<ILog> { new ConsoleLog() });
+            this.logger = new Logger(logVerbosity, new List<ILog>());
+            this.logger.OnLogEvent += this.OnLoggerEvent;
 
             this.protocol = new Protocol(host, port, useSsl, logger);
             this.protocol.OnIrcEvent += this.OnProtocolIrcEvent;
@@ -162,11 +188,11 @@ namespace UB3RIRC
 
             if (this.IsConnected)
             {
-                this.logger.Log(LogType.Info, "Connection attempt to {0} succeeded.", this.Host);
+                this.logger.Log(LogType.Info, $"Connection attempt to {this.Host} succeeded.");
             }
             else
             {
-                this.logger.Log(LogType.Info, "Connection attempt to {0} failed. Retrying in {1} seconds...", this.Host, connectionRetryDelay);
+                this.logger.Log(LogType.Info, $"Connection attempt to {this.Host} failed. Retrying in {connectionRetryDelay} seconds...");
             }
         }
     }
