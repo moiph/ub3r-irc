@@ -175,6 +175,15 @@ namespace UB3RIRC
         }
 
         /// <summary>
+        /// Sends raw data to the server.
+        /// </summary>
+        /// <param name="data">Raw data to send.</param>
+        public void SendRaw(string data)
+        {
+            this.protocol.SendRaw(data);
+        }
+
+        /// <summary>
         /// Event handler for disconnect events from the underlying connection.
         /// Only triggered if the disconnect was unexpected.
         /// This will kick off a timer to attempt reconnection with the server.
