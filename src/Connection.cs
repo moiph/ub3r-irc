@@ -300,6 +300,23 @@ namespace UB3RIRC
         }
 
         /// <summary>
+        /// Writes the given text to the stream.
+        /// </summary>
+        /// <param name="data">Data to send.</param>
+        public void SendRaw(string data)
+        {
+            if (!this.IsConnected)
+            {
+                throw new NotConnectedException($"Server {this.Server} is not connected.");
+            }
+
+            this.Logger.Log(LogType.Outgoing, data);
+
+            this.streamWriter.WriteLine(data);
+            this.streamWriter.Flush();
+        }
+
+        /// <summary>
         /// Fires the OnIncomingMessage event with the line read from the stream.
         /// </summary>
         /// <param name="line">The current line read from the stream.</param>

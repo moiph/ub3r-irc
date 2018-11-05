@@ -174,6 +174,15 @@ namespace UB3RIRC
         }
 
         /// <summary>
+        /// Send a raw content to the server.
+        /// </summary>
+        /// <param name="data">Raw content to send.</param>
+        public void SendRaw(string data)
+        {
+            this.connection.SendRaw(data);
+        }
+
+        /// <summary>
         /// Sets the topic for the specified channel.
         /// </summary>
         /// <param name="target">The channel.</param>
