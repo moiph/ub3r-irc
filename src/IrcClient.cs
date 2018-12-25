@@ -11,7 +11,7 @@ namespace UB3RIRC
         private Protocol protocol;
         private Logger logger;
 
-        private const int connectionRetryDelay = 15000;
+        private const int connectionRetryDelayMs = 60000;
 
         /// <summary>
         /// An identifier for this client instance.
@@ -191,7 +191,7 @@ namespace UB3RIRC
         private async void Connection_OnDisconnect()
         {
             // Wait before retrying
-            await Task.Delay(connectionRetryDelay);
+            await Task.Delay(connectionRetryDelayMs);
 
             await this.ConnectAsync();
 
@@ -201,7 +201,7 @@ namespace UB3RIRC
             }
             else
             {
-                this.logger.Log(LogType.Info, $"Connection attempt to {this.Host} failed. Retrying in {connectionRetryDelay} seconds...");
+                this.logger.Log(LogType.Info, $"Connection attempt to {this.Host} failed. Retrying in {connectionRetryDelayMs / 1000} seconds...");
             }
         }
     }

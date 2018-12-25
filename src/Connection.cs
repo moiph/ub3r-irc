@@ -223,11 +223,12 @@ namespace UB3RIRC
                 // TODO:
                 // Add client configuration to attempt retries
                 this.Logger.Log(LogType.Error, "Caught IOexception when reading from stream", e);
+                this.Disconnect(true);
             }
-            catch (NotConnectedException)
+            catch (NotConnectedException e)
             {
-                // TODO:
-                // Improve this error handling
+                this.Logger.Log(LogType.Error, "Caught NotConnectedException", e);
+                this.Disconnect(true);
             }
         }
 
@@ -372,12 +373,12 @@ namespace UB3RIRC
         {
             this.IsConnected = false;
 
-            this.streamWriter.Dispose();
+            this.streamWriter?.Dispose();
 
-            this.tcpClient.Dispose();
-            this.listener.Dispose();
+            this.tcpClient?.Dispose();
+            this.listener?.Dispose();
 
-            this.pingTimer.Dispose();
+            this.pingTimer?.Dispose();
         }
     }
 
