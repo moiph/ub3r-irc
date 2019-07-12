@@ -230,6 +230,11 @@ namespace UB3RIRC
                 this.Logger.Log(LogType.Error, "Caught NotConnectedException", e);
                 this.Disconnect(true);
             }
+            catch (IOException e)
+            {
+                this.Logger.Log(LogType.Error, "Caught IOException", e);
+                this.Disconnect(true);
+            }
         }
 
         public void Ping(object state)

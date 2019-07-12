@@ -9,7 +9,6 @@ namespace UB3RIRC
     public class IrcClient
     {
         private Protocol protocol;
-        private Logger logger;
 
         private const int connectionRetryDelayMs = 60000;
 
@@ -84,7 +83,7 @@ namespace UB3RIRC
         /// <summary>
         /// The client's logger. Use if you want to add a log medium (e.g. a console log)
         /// </summary>
-        public Logger Logger => this.logger;
+        public Logger Logger { get; }
 
         /// <summary>
         /// Whether or not we're hooked up and listening to events.
@@ -109,10 +108,10 @@ namespace UB3RIRC
             this.Password = password;
 
             // setup loggers
-            this.logger = new Logger(logVerbosity, new List<ILog>());
-            this.logger.OnLogEvent += this.OnLoggerEvent;
+            this.Logger = new Logger(logVerbosity, new List<ILog>());
+            this.Logger.OnLogEvent += this.OnLoggerEvent;
 
-            this.protocol = new Protocol(host, port, useSsl, logger);
+            this.protocol = new Protocol(host, port, useSsl, this.Logger);
             this.protocol.OnIrcEvent += this.OnProtocolIrcEvent;
             this.protocol.Connection.OnDisconnect += Connection_OnDisconnect;
         }
@@ -197,11 +196,11 @@ namespace UB3RIRC
 
             if (this.IsConnected)
             {
-                this.logger.Log(LogType.Info, $"Connection attempt to {this.Host} succeeded.");
+                this.Logger.Log(LogType.Info, $"Connection attempt to {this.Host} succeeded.");
             }
             else
             {
-                this.logger.Log(LogType.Info, $"Connection attempt to {this.Host} failed. Retrying in {connectionRetryDelayMs / 1000} seconds...");
+                this.Logger.Log(LogType.Info, $"Connection attempt to {this.Host} failed. Retrying in {connectionRetryDelayMs / 1000} seconds...");
             }
         }
     }
